@@ -181,22 +181,22 @@ void eval(char *cmdline)
 			pipe(pipefd);
 			if ((pid = Fork()) == 0)
 			{
-			int fdin, fdout;
+				int fdin, fdout;
 			
-			if (inputFiles[0] != NULL)
-			{
-				fdin = open(inputFiles[0], O_RDONLY);
-				dup2(fdin, 0);
-				close(fdin);
-			}
-			dup2(pipefd[1], 1); // make stdout same as pipefd 1
-			close(pipefd[0]); // Don't need this
-			
-			if (execve(argv[0], argv, environ) < 0)
-			{
-				printf("%s: Command not found.\n", argv[0]);
-				exit(0);
-			}
+				if (inputFiles[0] != NULL)
+				{
+					fdin = open(inputFiles[0], O_RDONLY);
+					dup2(fdin, 0);
+					close(fdin);
+				}
+				dup2(pipefd[1], 1); // make stdout same as pipefd 1
+				close(pipefd[0]); // Don't need this
+				
+				if (execve(argv[0], argv, environ) < 0)
+				{
+					printf("%s: Command not found.\n", argv[0]);
+					exit(0);
+				}
 			}
 			// We are the parent
 			else
@@ -285,9 +285,11 @@ void eval(char *cmdline)
 int builtin_command(char **argv) 
 {
     if (argv[0] == NULL || !strcmp(argv[0], "quit")) /* quit command */
-	exit(0);  
-    if (!strcmp(argv[0], "&"))    /* ignore singleton & */
-	return 1;
+		exit(0);  
+    
+	if (!strcmp(argv[0], "&"))    /* ignore singleton & */
+		return 1;
+
     return 0;                     /* not a builtin command */
 }
 /* $end eval */
@@ -306,21 +308,22 @@ int parseline(char *buf, char **argv)
 
     /* build the argv list */
     argc = 0;
-    while ((delim = strchr(buf, ' '))) {
-	argv[argc++] = buf;
-	*delim = '\0';
-	buf = delim + 1;
-	while (*buf && (*buf == ' ')) /* ignore spaces */
-	       buf++;
+    while ((delim = strchr(buf, ' '))) 
+	{
+		argv[argc++] = buf;
+		*delim = '\0';
+		buf = delim + 1;
+		while (*buf && (*buf == ' ')) /* ignore spaces */
+			buf++;
     }
     argv[argc] = NULL;
     
     if (argc == 0)  /* ignore blank line */
-	return 1;
+		return 1;
 
     /* should the job run in the background? */
     if ((bg = (*argv[argc-1] == '&')) != 0)
-	argv[--argc] = NULL;
+		argv[--argc] = NULL;
 
     return bg;
 }
