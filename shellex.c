@@ -95,16 +95,16 @@ void eval(char *cmdline)
     char *argv2[MAXARGS] = {NULL};
     for (int i = 0; argv[i]; i++)
     {
-	if (argv[i][0] != '\0')
-	{
-	    argv2[count++] = argv[i];
-	}
+		if (argv[i][0] != '\0')
+		{
+			argv2[count++] = argv[i];
+		}
     }
 
     count = 0;
     for (; argv2[count]; count++)
     {
-	argv[count] = argv2[count];
+		argv[count] = argv2[count];
     }
     argv[count] = NULL;
 
@@ -123,26 +123,26 @@ void eval(char *cmdline)
 			break;
 		}
 		count++;
-		}
+	}
 		
-		// Copy command to right of pipe to argv2
-		if (bHasPipe)
+	// Copy command to right of pipe to argv2
+	if (bHasPipe)
+	{
+		count++;
+		int j = 0;
+		for (; argv[count]; count++)
 		{
-			count++;
-			int j = 0;
-			for (; argv[count]; count++)
-			{
-				argv2[j++] = argv[count];
-			}
-
-			argv2[j] = NULL;
-		}
-		else
-		{
-			argv2[0] = NULL;
+			argv2[j++] = argv[count];
 		}
 
-		count = 0;
+		argv2[j] = NULL;
+	}
+	else
+	{
+		argv2[0] = NULL;
+	}
+
+	count = 0;
 
     if (!builtin_command(argv)) { 
 	// If we don't have any pipes
